@@ -1,6 +1,6 @@
 const videoGrid = document.getElementById('video-grid')
 const myVideo = document.createElement('video');
-const io = require('socket')
+const io = require('socketio')(server)
 //For not listning my own voice of my own video (problem Faced)
 myVideo.muted = true;
 
