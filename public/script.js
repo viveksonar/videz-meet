@@ -65,6 +65,13 @@ $('html').keydown((e) =>{
   }
 })
 
-socket.on('createMessage', message =>[
-  $('ul').append(`<li class="message"><b>user</b><br/>${message}</li>`)
-])
+socket.on('createMessage', message =>{
+  $('ul').append(`<li class="message"><b>user</b><br/>${message}</li>`);
+  scrollToBottom()
+})
+
+
+const scrollToBottom = () => {
+  var d = $('.main__chat__windows');
+  d.scrollTop(d.prop("scrollHeight"));
+}
