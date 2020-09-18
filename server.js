@@ -25,6 +25,10 @@ io.on('connection',socket =>{
   socket.on('join-room' , (roomId, userId) =>{
     socket.join(roomId);
     socket.to(roomId).broadcast.emit('user-connected', userId);
+
+    socket.on('disconnect', () => {
+      socket.to(roomId).broadcast.emit('user-disconnected', userId)
+    })
     socket.on('message', message =>{
       // To send the message to only its room id and not to every other room id
       io.to(roomId).emit('createMessage', message)

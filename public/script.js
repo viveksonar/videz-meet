@@ -7,10 +7,12 @@ myVideo.muted = true;
 var peer = new Peer(undefined, {
   path: "/peerjs",
   host: "/",
-  port: '443'
+  port: '443' //Peer-Peer connections only work with 443 port(Recomended)
 });
 
 let myVideoStream;
+
+const peers = {}
 
 navigator.mediaDevices
   .getUserMedia({
@@ -32,6 +34,10 @@ navigator.mediaDevices
     socket.on("user-connected", (userId) => {
       connectToNewUser(userId, stream);
     });
+
+    socket.on('user-disconnected', userId => {
+      if (peers[userId]) peers[userId].close()
+    })
   });
 
 peer.on("open", (id) => {
@@ -44,6 +50,11 @@ const connectToNewUser = (userId, stream) => {
   call.on("stream", (userVideoStream) => {
     addVideoStream(video, userVideoStream);
   });
+  call.on('close', () =>{
+    video.remove()
+  })
+
+  peers[userId] = call
 };
 
 const addVideoStream = (video, stream) => {
@@ -59,7 +70,6 @@ console.log(text)
 
 $('html').keydown((e) =>{
   if (e.which == 13 && text.val().length !== 0){
-    console.log(text.val())
     socket.emit('message', text.val());
     text.val('')
   }
@@ -74,4 +84,57 @@ socket.on('createMessage', message =>{
 const scrollToBottom = () => {
   var d = $('.main__chat__windows');
   d.scrollTop(d.prop("scrollHeight"));
+}
+
+const muteUnmute = () => {
+  const enabled = myVideoStream.getAudioTracks()[0].enabled;
+  if(enabled){
+    myVideoStream.getAudioTracks()[0].enabled = false;
+    setUnmuteButton();
+  } else{
+    setMuteButton()
+    myVideoStream.getAudioTracks()[0].enabled = true;
+    }
+}
+
+const setMuteButton = () =>{
+  const html = `
+    <i class="fas fa-microphone"></i>
+    <span>Mute</span>
+  `
+  document.querySelector('.main__mute__button').innerHTML = html;
+}
+const setUnmuteButton = () =>{
+  const html = `
+    <i class="unmute fas fa-microphone-slash"></i>
+    <span>UnMute</span>
+  `
+document.querySelector('.main__mute__button').innerHTML = html;
+}
+
+const playStop = () => {
+  let enabled = myVideoStream.getVideoTracks()[0].enabled;
+  if(enabled){
+    myVideoStream.getVideoTracks()[0].enabled = false;
+    setPlayVideo();
+  } else{
+    setStopVideo()
+    myVideoStream.getVideoTracks()[0].enabled = true;
+    }
+}
+
+const setStopVideo= () =>{
+  const html = `
+    <i class="fas fa-video"></i>
+    <span>Stop Video</span>
+  `
+document.querySelector('.main__video__button').innerHTML = html;
+}
+
+const setPlayVideo= () =>{
+  const html = `
+    <i class="stop fas fa-video-slash"></i>
+    <span>Play Video</span>
+  `
+document.querySelector('.main__video__button').innerHTML = html;
 }
