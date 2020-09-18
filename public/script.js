@@ -89,14 +89,14 @@ const muteUnmute = () => {
 const setMuteButton = () =>{
   const html = `
     <i class="fas fa-microphone"></i>
-    <span>UnMute</span>
+    <span>Mute</span>
   `
   document.querySelector('.main__mute__button').innerHTML = html;
 }
 const setUnmuteButton = () =>{
   const html = `
     <i class="unmute fas fa-microphone-slash"></i>
-    <span>Mute</span>
+    <span>UnMute</span>
   `
 document.querySelector('.main__mute__button').innerHTML = html;
 }
